@@ -71,7 +71,7 @@ class DuuxDataUpdateCoordinator(DataUpdateCoordinator):
     
     def __init__(self, hass, api, device_id, device_name):
         """Initialize."""
-        self.api = api
+        self.api: DuuxAPI = api
         self.device_id = device_id
         self.device_name = device_name
         
