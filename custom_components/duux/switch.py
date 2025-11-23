@@ -4,6 +4,9 @@ import logging
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
+from custom_components.duux import DuuxDataUpdateCoordinator
+from custom_components.duux.duux_api import DuuxAPI
+
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
@@ -26,6 +29,12 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         if sensor_type_id == 50:  # Edge heater v2
             entities.append(DuuxChildLockSwitch(coordinator, api, device))
             entities.append(DuuxNightModeSwitch(coordinator, api, device))
+
+        # Only Edge heaters have night 
+        if sensor_type_id == 33:  # Edge heater 2000
+            entities.append(DuuxChildLockSwitch(coordinator, api, device))
+            entities.append(DuuxNightModeSwitch(coordinator, api, device))
+            entities.append(DuuxEcoModeSwitch(coordinator, api, device))
     
     async_add_entities(entities)
 
@@ -33,7 +42,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 class DuuxSwitch(CoordinatorEntity, SwitchEntity):
     """Base class for Duux switches."""
 
-    def __init__(self, coordinator, api, device):
+    def __init__(self, coordinator: DuuxDataUpdateCoordinator, api: DuuxAPI, device):
         """Initialize the switch."""
         super().__init__(coordinator)
         self._api = api
@@ -112,5 +121,35 @@ class DuuxNightModeSwitch(DuuxSwitch):
         """Turn off night mode."""
         await self.hass.async_add_executor_job(
               self._api.set_night_mode, self._device_mac, False
+          )
+        await self._coordinator.async_request_refresh()
+
+
+class DuuxEcoModeSwitch(DuuxSwitch):
+    """Representation of a Duux eco mode switch."""
+
+    def __init__(self, coordinator, api,device):
+        """Initialize the eco mode switch."""
+        super().__init__(coordinator,api, device)
+        self._attr_unique_id = f"duux_{self._device_id}_eco_mode"
+        self._attr_name = f"{self.device_name} Eco Mode"
+        self._attr_icon = "mdi:sprout"
+
+    @property
+    def is_on(self):
+        """Return true if eco mode is on."""
+        return self.coordinator.data.get("eco") == 1
+
+    async def async_turn_on(self, **kwargs):
+        """Turn on eco mode."""
+        await self.hass.async_add_executor_job(
+            self._api.set_eco, self._device_mac, True
+        )
+        await self._coordinator.async_request_refresh()
+
+    async def async_turn_off(self, **kwargs):
+        """Turn off night mode."""
+        await self.hass.async_add_executor_job(
+              self._api.set_eco, self._device_mac, False
           )
         await self._coordinator.async_request_refresh()
