@@ -35,6 +35,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
             entities.append(DuuxChildLockSwitch(coordinator, api, device))
             entities.append(DuuxNightModeSwitch(coordinator, api, device))
             entities.append(DuuxEcoModeSwitch(coordinator, api, device))
+            entities.append(DuuxPowerSwitch(coordinator, api, device))
     
     async_add_entities(entities)
 
