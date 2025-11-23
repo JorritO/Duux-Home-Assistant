@@ -100,9 +100,9 @@ class DuuxAPI:
         value = "01" if night_on else "00"
         return self.send_command(device_mac, f"tune set night {value}")
     
-    def set_eco(self, device_mac, locked):
+    def set_eco(self, device_mac, eco):
         """Set eco mode."""
-        value = 1 if locked else 0
+        value = 1 if eco else 0
         return self.send_command(device_mac, f"tune set eco {value}")
     
     def set_lock(self, device_mac, locked):

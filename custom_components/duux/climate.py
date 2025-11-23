@@ -432,14 +432,12 @@ class DuuxEdge2000Climate(DuuxClimate):
     
     async def async_set_preset_mode(self, preset_mode):
         """Set preset mode."""
-        mode_map = {
-            self.PRESET_NONE: "0",
-            self.PRESET_ECO: "1",
-        }
-
-        mode = mode_map.get(preset_mode, 1)
-
-        await self.hass.async_add_executor_job(
-            self._api.set_eco, self._device_mac, mode
-        )
+        if preset_mode == self.PRESET_ECO:
+            await self.hass.async_add_executor_job(
+                self._api.set_eco, self._device_mac, True
+            )
+        else:
+            await self.hass.async_add_executor_job(
+                self._api.set_eco, self._device_mac, False
+            )
         await self._coordinator.async_request_refresh()

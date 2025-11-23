@@ -153,3 +153,33 @@ class DuuxEcoModeSwitch(DuuxSwitch):
               self._api.set_eco, self._device_mac, False
           )
         await self._coordinator.async_request_refresh()
+
+
+class DuuxPowerSwitch(DuuxSwitch):
+    """Representation of a Duux power switch."""
+
+    def __init__(self, coordinator, api,device):
+        """Initialize the power switch."""
+        super().__init__(coordinator,api, device)
+        self._attr_unique_id = f"duux_{self._device_id}_eco_mode"
+        self._attr_name = f"{self.device_name} Power"
+        self._attr_icon = "mdi:power"
+
+    @property
+    def is_on(self):
+        """Return true if power is on."""
+        return self.coordinator.data.get("eco") == 1
+
+    async def async_turn_on(self, **kwargs):
+        """Turn on power."""
+        await self.hass.async_add_executor_job(
+            self._api.set_power, self._device_mac, True
+        )
+        await self._coordinator.async_request_refresh()
+
+    async def async_turn_off(self, **kwargs):
+        """Turn off night mode."""
+        await self.hass.async_add_executor_job(
+              self._api.set_power, self._device_mac, False
+          )
+        await self._coordinator.async_request_refresh()
