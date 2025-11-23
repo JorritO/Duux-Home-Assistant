@@ -169,7 +169,7 @@ class DuuxPowerSwitch(DuuxSwitch):
     @property
     def is_on(self):
         """Return true if power is on."""
-        return self.coordinator.data.get("eco") == 1
+        return self.coordinator.data.get("power") == 1
 
     async def async_turn_on(self, **kwargs):
         """Turn on power."""
