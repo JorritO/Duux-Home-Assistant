@@ -162,7 +162,7 @@ class DuuxPowerSwitch(DuuxSwitch):
     def __init__(self, coordinator, api,device):
         """Initialize the power switch."""
         super().__init__(coordinator,api, device)
-        self._attr_unique_id = f"duux_{self._device_id}_eco_mode"
+        self._attr_unique_id = f"duux_{self._device_id}_power"
         self._attr_name = f"{self.device_name} Power"
         self._attr_icon = "mdi:power"
 
